@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Thin, nearly-transparent scrollbar for horizontally scrollable code/terminal
+   areas. The thumb is a faint tint of the element's own text color, so it stays
+   barely visible until hovered. */
+.scrollbar-faint {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, currentColor 12%, transparent) transparent;
+}
+
+.scrollbar-faint::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.scrollbar-faint::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-faint::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, currentColor 12%, transparent);
+  border-radius: 9999px;
+}
+
+.scrollbar-faint:hover::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, currentColor 28%, transparent);
+}

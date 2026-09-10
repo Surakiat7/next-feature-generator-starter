@@ -58,7 +58,7 @@ export function LiveGeneratorDemo() {
 
         <div className="grid gap-4 lg:grid-cols-2">
           <TerminalDemo lines={frame.terminal} running={running} />
-          <div className="overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
+          <div className="scrollbar-faint overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40">
             <div className="mb-2 font-mono text-[11px] text-zinc-500">file tree</div>
             <FileTree entries={frame.tree} />
           </div>

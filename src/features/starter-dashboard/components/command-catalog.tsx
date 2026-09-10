@@ -37,7 +37,7 @@ function CommandRow({
         {badge && <StatusBadge badge={badge} />}
       </div>
       <div className="flex items-center gap-2">
-        <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-md bg-zinc-100 px-2.5 py-1.5 font-mono text-xs text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
+        <code className="scrollbar-faint min-w-0 flex-1 overflow-x-auto whitespace-nowrap rounded-md bg-zinc-100 px-2.5 py-1.5 font-mono text-xs text-zinc-800 dark:bg-zinc-900 dark:text-zinc-200">
           {command}
         </code>
         <CopyButton value={command} />
