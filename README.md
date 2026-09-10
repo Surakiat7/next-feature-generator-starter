@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next Feature Starter
 
-## Getting Started
+Next.js starter template with a **feature-based project structure** and
+**built-in code generators**. Create future projects from this template and
+scaffold architecture with a single command instead of hand-wiring folders,
+barrels, and routes.
 
-First, run the development server:
+- Next.js 16 (App Router, `src/`), React 19, TypeScript, Tailwind CSS v4
+- Feature-based architecture with a centralized route registry
+- A deterministic TypeScript generator (`pnpm gen`) — no AI at generation time
+- Optional, reversible i18n (next-intl) and theme (next-themes)
+- Architecture validation (`doctor`, `routes check`) and Vitest tests
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/          App Router (thin pages that compose feature views)
+├── components/   Shared UI (ui/ for primitives)
+├── features/     Domain features (most code lives here)
+├── hooks/        Shared hooks
+├── lib/          Shared infrastructure
+├── providers/    App-level providers
+├── routes/       paths.ts — single source of truth for navigation
+├── services/     Shared API/service infrastructure
+├── store/        Shared state
+├── style/        Shared styling assets
+└── types/        Shared types
 
-## Learn More
+tools/codegen/    The generator (CLI, core, templates, tests)
+.agents/          Rules & skills for AI coding agents
+codegen.config.ts Generator configuration
+```
 
-To learn more about Next.js, take a look at the following resources:
+See [`.agents/rules/architecture.md`](.agents/rules/architecture.md) for the
+full breakdown.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Generator
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm gen feature <name>        # feature module (+ optional initial page)
+pnpm gen page <name> --feature <feature>
+pnpm gen component <name> --feature <feature> | --shared
 
-## Deploy on Vercel
+pnpm gen i18n init | remove    # optional internationalization (next-intl)
+pnpm gen theme init | remove   # optional dark/light theme (next-themes)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+pnpm gen routes check          # detect hardcoded internal navigation
+pnpm gen doctor                # inspect the architecture
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All mutating commands support `--dry-run` (write nothing) and `--yes` (skip the
+confirmation). Every command shows a change plan before writing and is
+**idempotent** and **transactional** (rolls back on failure).
+
+### Example
+
+```bash
+pnpm gen feature auth --page login --route /login --path-key login
+```
+
+produces:
+
+```
+src/features/auth/{components,hooks,lib,types}/index.ts
+src/features/auth/view/login-view.tsx      # LoginView
+src/features/auth/index.ts                 # exports LoginView
+src/app/login/page.tsx                     # composes LoginView
+src/routes/paths.ts                        # + login: "/login"
+```
+
+Dynamic routes generate a Next 16 async-params page and a path **function**:
+
+```bash
+pnpm gen page project-detail --feature projects --route "/projects/[projectId]" --path-key projects.detail
+# paths.projects.detail(projectId) => `/projects/${projectId}`
+```
+
+## Centralized routing
+
+Never hardcode internal paths. Import from `@/routes`:
+
+```tsx
+import { paths } from "@/routes";
+
+<Link href={paths.login}>Sign in</Link>;
+router.push(paths.projects.detail(projectId));
+```
+
+`pnpm gen routes check` fails the build if hardcoded `<Link href>`,
+`router.push/replace/prefetch`, `redirect`, or `permanentRedirect` literals are
+found (AST-based, not regex).
+
+## i18n & theme
+
+Both are **optional** and off by default. `init` installs the runtime dependency
+and wires everything up; `remove` is destructive, defaults confirmation to **no**,
+and refuses to run when it cannot safely undo a change (e.g. dynamic translation
+keys). After `i18n init`, the same `pnpm gen page …` command automatically emits
+pages under `src/app/[locale]/…`. See
+[`.agents/rules/i18n.md`](.agents/rules/i18n.md) and
+[`.agents/rules/theme.md`](.agents/rules/theme.md).
+
+## Scripts
+
+```bash
+pnpm dev / build / start / lint
+pnpm typecheck        # tsc --noEmit
+pnpm test             # vitest (generator tests, run in temp fixtures)
+pnpm gen ...          # the generator
+```
+
+## For AI agents
+
+Start from [`AGENTS.md`](AGENTS.md); it indexes the rules in `.agents/rules` and
+skills in `.agents/skills`.
