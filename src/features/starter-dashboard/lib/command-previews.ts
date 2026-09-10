@@ -30,16 +30,16 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
   {
     id: "feature",
     label: "Feature",
-    command: "pnpm gen feature auth --page login --route /login --path-key login",
-    description: "Create a feature module with an initial page and route.",
+    command: "pnpm gen feature login",
+    description: "Create a feature module with an initial page and route (page, route, and path key are inferred from the feature name).",
     countsFeatures: true,
     creates: [
-      "src/features/auth/components/index.ts",
-      "src/features/auth/hooks/index.ts",
-      "src/features/auth/lib/index.ts",
-      "src/features/auth/types/index.ts",
-      "src/features/auth/view/login-view.tsx",
-      "src/features/auth/index.ts",
+      "src/features/login/components/index.ts",
+      "src/features/login/hooks/index.ts",
+      "src/features/login/lib/index.ts",
+      "src/features/login/types/index.ts",
+      "src/features/login/view/login-view.tsx",
+      "src/features/login/index.ts",
       "src/app/login/page.tsx",
     ],
     modifies: ["src/routes/paths.ts"],
@@ -47,7 +47,7 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
   {
     id: "page",
     label: "Page",
-    command: "pnpm gen page forgot-password --feature auth --route /forgot-password",
+    command: "pnpm gen page forgot-password --feature auth",
     description: "Add a page (incl. dynamic [param] routes) to an existing feature.",
     creates: [
       "src/features/auth/view/forgot-password-view.tsx",

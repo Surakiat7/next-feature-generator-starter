@@ -32,10 +32,10 @@ program
 program
   .command("feature")
   .argument("[name]", "feature name (kebab-case)")
-  .description("Generate a feature module, optionally with an initial page")
-  .option("--page <page>", "also create an initial page")
-  .option("--route <route>", "route for the initial page, e.g. /login")
-  .option("--path-key <key>", "centralized route key, e.g. login")
+  .description("Generate a feature module with an initial page")
+  .option("--page <page>", "page name (defaults to the feature name)")
+  .option("--route <route>", "route for the initial page (defaults to /<page>)")
+  .option("--path-key <key>", "centralized route key (defaults to camelCase of page)")
   .option("-y, --yes", "skip the confirmation prompt")
   .option("--dry-run", "print the plan without writing files")
   .action((name, opts) => guard(runFeature(name, opts)));

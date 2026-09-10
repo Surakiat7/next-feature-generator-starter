@@ -3,7 +3,7 @@ import { dirExists } from "../core/filesystem";
 import { logger } from "../core/logger";
 import { assertValidName, toCamel, toKebab } from "../core/naming";
 import { Planner, finalize, type FinalizeResult } from "../core/planner";
-import { promptConfirm, promptInput } from "../core/prompts";
+import { promptInput } from "../core/prompts";
 import { featureRootIndex, subBarrel } from "../templates/feature";
 import { addPageToPlan } from "./shared";
 
@@ -38,29 +38,11 @@ export async function runFeature(
     return "empty";
   }
 
-  // Decide whether to scaffold an initial page.
-  let page = opts.page;
-  let createPage = Boolean(page);
-  if (!page && interactive) {
-    createPage = await promptConfirm("Create initial page?", true);
-    if (createPage) {
-      page = await promptInput("Page name:", { default: "index", required: true });
-    }
-  }
-
-  let route = opts.route;
-  let pathKey = opts.pathKey;
-  if (createPage && page) {
-    assertValidName(page, "page name");
-    if (!route) {
-      const fallback = `/${toKebab(page)}`;
-      route = interactive ? await promptInput("Route:", { default: fallback }) : fallback;
-    }
-    if (!pathKey) {
-      const fallback = toCamel(page);
-      pathKey = interactive ? await promptInput("Route key:", { default: fallback }) : fallback;
-    }
-  }
+  // Convention-over-configuration: infer page, route, and path key from the feature name.
+  const page = opts.page ?? feature;
+  assertValidName(page, "page name");
+  const route = opts.route ?? `/${page}`;
+  const pathKey = opts.pathKey ?? toCamel(page);
 
   const planner = new Planner();
   const base = `${cfg.featuresDir}/${feature}`;
@@ -68,25 +50,23 @@ export async function runFeature(
     planner.create(`${base}/${sub}/index.ts`, subBarrel(sub));
   }
 
-  if (createPage && page && route && pathKey) {
-    await addPageToPlan({
-      planner,
-      cfg,
-      feature,
-      page,
-      route,
-      pathKey,
-      currentFeatureIndex: featureRootIndex(),
-      featureIndexExists: false,
-    });
-  } else {
-    planner.create(`${base}/index.ts`, featureRootIndex());
-  }
+  await addPageToPlan({
+    planner,
+    cfg,
+    feature,
+    page,
+    route,
+    pathKey,
+    currentFeatureIndex: featureRootIndex(),
+    featureIndexExists: false,
+  });
 
-  const fields: [string, string][] = [["Feature", feature]];
-  if (createPage && page) {
-    fields.push(["Page", toKebab(page)], ["Route", route!], ["Path key", pathKey!]);
-  }
+  const fields: [string, string][] = [
+    ["Feature", feature],
+    ["Page", toKebab(page)],
+    ["Route", route],
+    ["Path key", pathKey],
+  ];
 
   return finalize(planner, {
     title: "Feature Generator",

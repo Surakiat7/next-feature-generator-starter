@@ -73,9 +73,7 @@ export function getSteps(status: ProjectStatus): OnboardingStep[] {
       title: "Generate the first feature",
       description:
         "Creates a feature module, a page, and registers the route in the centralized registry.",
-      commands: [
-        "pnpm gen feature auth --page login --route /login --path-key login",
-      ],
+      commands: ["pnpm gen feature login"],
       status:
         status.features.length > 0
           ? { text: `${status.features.length} feature(s) detected`, tone: "completed" }

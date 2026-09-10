@@ -23,23 +23,30 @@ The starter dashboard is at [`http://localhost:3000/dashboard-demo`](http://loca
 ## Generate your first feature
 
 ```bash
-pnpm gen feature auth --page login --route /login --path-key login
+pnpm gen feature login
 ```
 
 This creates:
 
 ```
-src/features/auth/view/login-view.tsx
-src/features/auth/index.ts
+src/features/login/view/login-view.tsx
+src/features/login/index.ts
 src/app/login/page.tsx
 src/routes/paths.ts       # + login: "/login"
+```
+
+Override example:
+
+```bash
+pnpm gen feature auth --page login --route /sign-in --path-key signIn
 ```
 
 ## Generator commands
 
 ```bash
 # Feature, page, and component
-pnpm gen feature <name> [--page <name> --route <path> --path-key <key>]
+pnpm gen feature <name>                          # page, route, and path key inferred
+pnpm gen feature <name> --page <name> --route <path> --path-key <key>
 pnpm gen page <name> --feature <feature> --route <path> --path-key <key>
 pnpm gen component <name> --feature <feature> | --shared
 

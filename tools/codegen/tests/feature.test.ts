@@ -21,7 +21,22 @@ afterEach(() => {
 });
 
 describe("gen feature", () => {
-  it("scaffolds the feature, view, page, public export and route", async () => {
+  it("infers page, route, and path key from the feature name", async () => {
+    const result = await runFeature("login", { yes: true });
+    expect(result).toBe("written");
+
+    for (const sub of ["components", "hooks", "lib", "types"]) {
+      expect(fx.exists(`src/features/login/${sub}/index.ts`)).toBe(true);
+    }
+    expect(fx.read("src/features/login/view/login-view.tsx")).toContain("export function LoginView");
+    expect(fx.read("src/app/login/page.tsx")).toContain("import { LoginView }");
+    expect(fx.read("src/features/login/index.ts")).toContain(
+      'export { LoginView } from "./view/login-view";',
+    );
+    expect(fx.read("src/routes/paths.ts")).toContain('login: "/login"');
+  });
+
+  it("supports overrides for page, route, and path key", async () => {
     const result = await runFeature("auth", {
       page: "login",
       route: "/login",
@@ -42,24 +57,24 @@ describe("gen feature", () => {
   });
 
   it("aborts on a duplicate feature without changing files", async () => {
-    await runFeature("auth", { page: "login", route: "/login", pathKey: "login", yes: true });
-    const before = fx.read("src/features/auth/view/login-view.tsx");
+    await runFeature("auth", { yes: true });
+    const before = fx.read("src/features/auth/view/auth-view.tsx");
 
     const result = await runFeature("auth", { page: "other", route: "/other", pathKey: "other", yes: true });
     expect(result).toBe("empty");
-    expect(fx.read("src/features/auth/view/login-view.tsx")).toBe(before);
+    expect(fx.read("src/features/auth/view/auth-view.tsx")).toBe(before);
     expect(fx.exists("src/app/other/page.tsx")).toBe(false);
   });
 
   it("writes zero files on --dry-run", async () => {
-    const result = await runFeature("billing", { page: "invoices", route: "/invoices", pathKey: "invoices", dryRun: true });
+    const result = await runFeature("billing", { dryRun: true });
     expect(result).toBe("dry-run");
     expect(fx.exists("src/features/billing")).toBe(false);
-    expect(fx.read("src/routes/paths.ts")).not.toContain("invoices");
+    expect(fx.read("src/routes/paths.ts")).not.toContain("billing");
   });
 
   it("writes zero files when the confirmation is declined", async () => {
-    const result = await runFeature("orders", { page: "list", route: "/orders", pathKey: "orders", yes: false });
+    const result = await runFeature("orders", { yes: false });
     expect(result).toBe("cancelled");
     expect(fx.exists("src/features/orders")).toBe(false);
   });
@@ -81,7 +96,12 @@ describe("gen page", () => {
   });
 
   it("generates a path function for a dynamic route", async () => {
-    await runFeature("projects", { yes: true });
+    await runFeature("projects", {
+      page: "list",
+      route: "/projects",
+      pathKey: "projects.list",
+      yes: true,
+    });
     const result = await runPage("project-detail", {
       feature: "projects",
       route: "/projects/[projectId]",
