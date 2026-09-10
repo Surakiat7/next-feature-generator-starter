@@ -1,5 +1,6 @@
 import { ArchitectureOverview } from "../components/architecture-overview";
 import { BackToAppButton } from "../components/back-to-app-button";
+import { CommandCatalog } from "../components/command-catalog";
 import { FeatureStatus } from "../components/feature-status";
 import { IntegrationStatus } from "../components/integration-status";
 import { LiveGeneratorDemo } from "../components/live-generator-demo";
@@ -59,6 +60,17 @@ export function StarterDashboardView() {
               <IntegrationStatus i18n={status.i18nEnabled} theme={status.themeEnabled} />
             </div>
           </div>
+        </section>
+
+        <hr className="mb-12 border-zinc-200 dark:border-zinc-800" />
+
+        <section className="mb-12">
+          <SectionLabel title="Generator Commands" sub="copy & run in your terminal" />
+          <CommandCatalog
+            i18nEnabled={status.i18nEnabled}
+            themeEnabled={status.themeEnabled}
+            featureCount={status.features.length}
+          />
         </section>
 
         <hr className="mb-12 border-zinc-200 dark:border-zinc-800" />
