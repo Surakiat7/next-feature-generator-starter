@@ -30,7 +30,7 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
   {
     id: "feature",
     label: "Feature",
-    command: "pnpm gen feature auth --page login --route /login",
+    command: "pnpm gen feature auth --page login --route /login --path-key login",
     description: "Create a feature module with an initial page and route.",
     countsFeatures: true,
     creates: [
