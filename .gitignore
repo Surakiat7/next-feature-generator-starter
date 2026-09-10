@@ -34,6 +34,10 @@ yarn-error.log*
 .env*
 !.env.example
 
+# Claude Code local skill links / config (machine-specific; skill content is
+# vendored under .agents/skills instead)
+.claude/
+
 # vercel
 .vercel
 
