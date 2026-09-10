@@ -3,7 +3,7 @@ import type { TerminalLine } from "../types/generator-demo.types";
 function Line({ line }: { line: TerminalLine }) {
   if (line.kind === "run") {
     return (
-      <div className="text-zinc-100">
+      <div data-term-line className="text-zinc-100">
         <span className="select-none text-emerald-400">$ </span>
         {line.text}
       </div>
@@ -11,13 +11,17 @@ function Line({ line }: { line: TerminalLine }) {
   }
   if (line.kind === "ok") {
     return (
-      <div className="text-zinc-300">
+      <div data-term-line className="text-zinc-300">
         <span className="select-none text-emerald-400">✓ </span>
         {line.text}
       </div>
     );
   }
-  return <div className="text-zinc-400">{line.text}</div>;
+  return (
+    <div data-term-line className="text-zinc-400">
+      {line.text}
+    </div>
+  );
 }
 
 export function TerminalDemo({ lines, running }: { lines: TerminalLine[]; running: boolean }) {

@@ -23,6 +23,8 @@ export function FileTreeNode({ node, depth }: { node: TreeNode; depth: number })
   return (
     <li>
       <div
+        data-tree-row
+        data-node-state={node.state}
         className={`flex items-center whitespace-nowrap ${STATE_CLASS[node.state]}`}
         style={{ paddingLeft: `${depth * 14}px` }}
       >

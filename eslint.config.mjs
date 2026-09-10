@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored third-party agent skills (e.g. Impeccable) are not our source.
+    ".agents/skills/**",
   ]),
 ]);
 
