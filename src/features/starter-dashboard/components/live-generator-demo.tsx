@@ -44,7 +44,7 @@ export function LiveGeneratorDemo() {
               disabled={running}
               className="rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
             >
-              {running ? "Running…" : "Run demo"}
+              {running ? "Running…" : "Replay"}
             </button>
             <button
               type="button"

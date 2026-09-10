@@ -16,7 +16,8 @@ export function useGeneratorDemo() {
   );
 
   const [revealed, setRevealed] = useState(0);
-  const [started, setStarted] = useState(false);
+  // Auto-run from the first paint so visitors immediately see the demo play.
+  const [started, setStarted] = useState(true);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearTimer = useCallback(() => {
@@ -34,7 +35,7 @@ export function useGeneratorDemo() {
 
   useEffect(() => {
     if (!started || revealed >= scenario.steps.length) return;
-    timer.current = setTimeout(() => setRevealed((r) => r + 1), revealed === 0 ? 250 : 720);
+    timer.current = setTimeout(() => setRevealed((r) => r + 1), revealed === 0 ? 150 : 420);
     return clearTimer;
   }, [started, revealed, scenario, clearTimer]);
 
@@ -50,11 +51,12 @@ export function useGeneratorDemo() {
     setRevealed(0);
   }, [clearTimer]);
 
+  // Switching scenarios auto-runs the new one immediately.
   const select = useCallback(
     (id: string) => {
       clearTimer();
-      setStarted(false);
       setRevealed(0);
+      setStarted(true);
       setScenarioId(id);
     },
     [clearTimer],

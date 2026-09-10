@@ -18,8 +18,8 @@ function SectionLabel({ title, sub }: { title: string; sub?: string }) {
 
 /**
  * Development-time control center for understanding the starter architecture.
- * The top half is REAL project status detected from the source tree; the bottom
- * half is a clearly-labelled SIMULATED generator demo.
+ * The clearly-labelled SIMULATED generator demo leads (it auto-plays), followed
+ * by the REAL project status and command catalog detected from the source tree.
  */
 export function StarterDashboardView() {
   const status = getProjectStatus();
@@ -40,6 +40,13 @@ export function StarterDashboardView() {
           </div>
           <BackToAppButton />
         </header>
+
+        <section className="mb-12">
+          <SectionLabel title="Live Generator Demo" sub="simulated — auto-plays, never touches your files" />
+          <LiveGeneratorDemo />
+        </section>
+
+        <hr className="mb-12 border-zinc-200 dark:border-zinc-800" />
 
         <section className="mb-12">
           <SectionLabel title="Real Project Status" sub="detected from src/" />
@@ -64,20 +71,13 @@ export function StarterDashboardView() {
 
         <hr className="mb-12 border-zinc-200 dark:border-zinc-800" />
 
-        <section className="mb-12">
+        <section>
           <SectionLabel title="Generator Commands" sub="copy & run in your terminal" />
           <CommandCatalog
             i18nEnabled={status.i18nEnabled}
             themeEnabled={status.themeEnabled}
             featureCount={status.features.length}
           />
-        </section>
-
-        <hr className="mb-12 border-zinc-200 dark:border-zinc-800" />
-
-        <section>
-          <SectionLabel title="Live Generator Demo" sub="simulated — never touches your files" />
-          <LiveGeneratorDemo />
         </section>
       </div>
     </div>
