@@ -1,15 +1,15 @@
 "use client";
 
 import { animate, stagger } from "animejs";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
-  BASE_STRUCTURE,
   COMMAND_PREVIEWS,
   type CommandPreview,
 } from "../lib/command-previews";
-import type { TreeEntry, TreeNodeState } from "../types/generator-demo.types";
+import { useCommandSimulation } from "../hooks/use-command-simulation";
 import { CopyButton } from "./copy-button";
 import { FileTree } from "./file-tree";
+import { TerminalDemo } from "./terminal-demo";
 
 function badgeFor(
   cmd: CommandPreview,
@@ -50,20 +50,20 @@ export function CommandExplorer({
   themeEnabled: boolean;
   featureCount: number;
 }) {
-  const [selectedId, setSelectedId] = useState(COMMAND_PREVIEWS[0]!.id);
-  const selected =
-    COMMAND_PREVIEWS.find((c) => c.id === selectedId) ?? COMMAND_PREVIEWS[0]!;
+  const {
+    selected,
+    selectedId,
+    script,
+    revealed,
+    running,
+    stop,
+    replay,
+    selectCommand,
+    entries,
+  } = useCommandSimulation();
 
   const treeRef = useRef<HTMLDivElement>(null);
   const codeRef = useRef<HTMLDivElement>(null);
-
-  const entries: TreeEntry[] = useMemo(() => {
-    const map = new Map<string, TreeNodeState>();
-    for (const p of BASE_STRUCTURE) map.set(p, "existing");
-    for (const p of selected.modifies) map.set(p, "highlight");
-    for (const p of selected.creates) map.set(p, "added");
-    return [...map.entries()].map(([path, state]) => ({ path, state }));
-  }, [selected]);
 
   // Animate the folder structure + command whenever the selection changes.
   useEffect(() => {
@@ -103,7 +103,7 @@ export function CommandExplorer({
             <li key={cmd.id}>
               <button
                 type="button"
-                onClick={() => setSelectedId(cmd.id)}
+                onClick={() => selectCommand(cmd.id)}
                 aria-pressed={active}
                 className={`w-full rounded-lg border px-3 py-2.5 text-left transition-colors ${
                   active
@@ -130,12 +130,32 @@ export function CommandExplorer({
 
       {/* Structure preview */}
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/40">
-        <div ref={codeRef} className="flex items-center gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-          <code className="scrollbar-faint min-w-0 flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
-            <span className="select-none text-emerald-600 dark:text-emerald-400">$ </span>
-            {selected.command}
-          </code>
-          <CopyButton value={selected.command} />
+        <div ref={codeRef} className="flex items-center justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+          <div className="flex w-fit items-center gap-2">
+            <code className="scrollbar-faint w-fit overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
+              <span className="select-none text-emerald-600 dark:text-emerald-400">$ </span>
+              {selected.command}
+            </code>
+            <CopyButton value={selected.command} />
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={stop}
+              disabled={!running}
+              className="shrink-0 rounded-md border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-40 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+            >
+              Stop
+            </button>
+            <button
+              type="button"
+              onClick={replay}
+              disabled={running}
+              className="shrink-0 rounded-md bg-zinc-900 px-2.5 py-1 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900"
+            >
+              {running ? "Running…" : "Replay"}
+            </button>
+          </div>
         </div>
 
         <div className="p-4">
@@ -156,12 +176,16 @@ export function CommandExplorer({
             )}
           </div>
 
-          <div
-            ref={treeRef}
-            key={selectedId}
-            className="scrollbar-faint overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40"
-          >
-            <FileTree entries={entries} />
+          <div className="grid items-start gap-4 lg:grid-cols-2">
+            <div
+              ref={treeRef}
+              key={selectedId}
+              className="scrollbar-faint overflow-auto rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-800 dark:bg-zinc-900/40"
+            >
+              <div className="mb-2 font-mono text-[11px] text-zinc-500">file tree</div>
+              <FileTree entries={entries} />
+            </div>
+            <TerminalDemo lines={script.slice(0, revealed)} running={running} />
           </div>
         </div>
       </div>
