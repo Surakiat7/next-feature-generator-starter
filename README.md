@@ -23,22 +23,39 @@ The starter dashboard is at [`http://localhost:3000/dashboard-demo`](http://loca
 ## Generate your first feature
 
 ```bash
-pnpm gen feature login
+pnpm gen feature product
 ```
 
 This creates:
 
 ```
-src/features/login/view/login-view.tsx
-src/features/login/index.ts
-src/app/login/page.tsx
-src/routes/paths.ts       # + login: "/login"
+src/features/product/
+├── components/
+│   ├── product-content.tsx
+│   └── index.ts
+├── hooks/
+│   ├── use-product-state.ts
+│   └── index.ts
+├── lib/
+│   ├── product.constants.ts
+│   └── index.ts
+├── types/
+│   ├── product.types.ts
+│   └── index.ts
+├── view/
+│   └── product-view.tsx
+└── index.ts
+
+src/app/product/page.tsx
+src/routes/paths.ts       # + product: "/product"
 ```
+
+The generated page is available at `http://localhost:3000/product` and linked through `paths.product`.
 
 Override example:
 
 ```bash
-pnpm gen feature auth --page login --route /sign-in --path-key signIn
+pnpm gen feature workspace --page home --route /workspace --path-key workspace
 ```
 
 ## Generator commands
@@ -68,7 +85,7 @@ Never hardcode paths. Use `paths` from `@/routes`:
 ```tsx
 import { paths } from "@/routes";
 
-<Link href={paths.login}>Sign in</Link>
+<Link href={paths.product}>Product</Link>
 ```
 
 `pnpm gen routes check` fails the build if it finds hardcoded internal navigation in `Link`, `router.*`, `redirect`, or `permanentRedirect` calls.

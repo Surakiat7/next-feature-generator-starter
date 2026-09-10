@@ -21,19 +21,63 @@ afterEach(() => {
 });
 
 describe("gen feature", () => {
-  it("infers page, route, and path key from the feature name", async () => {
-    const result = await runFeature("login", { yes: true });
+  it("generates the generic sample architecture for a feature", async () => {
+    const result = await runFeature("product", { yes: true });
     expect(result).toBe("written");
 
-    for (const sub of ["components", "hooks", "lib", "types"]) {
-      expect(fx.exists(`src/features/login/${sub}/index.ts`)).toBe(true);
-    }
-    expect(fx.read("src/features/login/view/login-view.tsx")).toContain("export function LoginView");
-    expect(fx.read("src/app/login/page.tsx")).toContain("import { LoginView }");
-    expect(fx.read("src/features/login/index.ts")).toContain(
-      'export { LoginView } from "./view/login-view";',
+    expect(fx.read("src/features/product/types/product.types.ts")).toContain(
+      "export type ProductContentProps",
     );
-    expect(fx.read("src/routes/paths.ts")).toContain('login: "/login"');
+    expect(fx.read("src/features/product/lib/product.constants.ts")).toContain(
+      "export const PRODUCT_META",
+    );
+    expect(fx.read("src/features/product/hooks/use-product-state.ts")).toContain(
+      "export function useProductState",
+    );
+    expect(fx.read("src/features/product/components/product-content.tsx")).toContain(
+      "export function ProductContent",
+    );
+
+    expect(fx.read("src/features/product/view/product-view.tsx")).toContain(
+      "export function ProductView",
+    );
+    expect(fx.read("src/app/product/page.tsx")).toContain("import { ProductView }");
+    expect(fx.read("src/features/product/index.ts")).toContain(
+      'export { ProductView } from "./view/product-view";',
+    );
+    expect(fx.read("src/routes/paths.ts")).toContain('product: "/product"');
+
+    const view = fx.read("src/features/product/view/product-view.tsx");
+    expect(view).toContain('import { ProductContent } from "../components";');
+    expect(view).toContain('import { useProductState } from "../hooks";');
+    expect(view).toContain('import { PRODUCT_META } from "../lib";');
+  });
+
+  it("derives kebab / Pascal / camel / constant / title naming correctly", async () => {
+    const result = await runFeature("order-history", { yes: true });
+    expect(result).toBe("written");
+
+    expect(fx.exists("src/features/order-history/types/order-history.types.ts")).toBe(true);
+    expect(fx.read("src/features/order-history/types/order-history.types.ts")).toContain(
+      "OrderHistoryContentProps",
+    );
+    expect(fx.read("src/features/order-history/lib/order-history.constants.ts")).toContain(
+      "ORDER_HISTORY_META",
+    );
+    expect(fx.read("src/features/order-history/hooks/use-order-history-state.ts")).toContain(
+      "useOrderHistoryState",
+    );
+    expect(fx.read("src/features/order-history/components/order-history-content.tsx")).toContain(
+      "OrderHistoryContent",
+    );
+    expect(fx.read("src/features/order-history/view/order-history-view.tsx")).toContain(
+      "OrderHistoryView",
+    );
+    expect(fx.read("src/app/order-history/page.tsx")).toContain("import { OrderHistoryView }");
+    expect(fx.read("src/routes/paths.ts")).toContain('orderHistory: "/order-history"');
+    expect(fx.read("src/features/order-history/lib/order-history.constants.ts")).toContain(
+      '"Order History"',
+    );
   });
 
   it("supports overrides for page, route, and path key", async () => {
@@ -45,10 +89,8 @@ describe("gen feature", () => {
     });
     expect(result).toBe("written");
 
-    for (const sub of ["components", "hooks", "lib", "types"]) {
-      expect(fx.exists(`src/features/auth/${sub}/index.ts`)).toBe(true);
-    }
     expect(fx.read("src/features/auth/view/login-view.tsx")).toContain("export function LoginView");
+    expect(fx.read("src/features/auth/view/login-view.tsx")).toContain('import { AuthContent } from "../components";');
     expect(fx.read("src/app/login/page.tsx")).toContain("import { LoginView }");
     expect(fx.read("src/features/auth/index.ts")).toContain(
       'export { LoginView } from "./view/login-view";',

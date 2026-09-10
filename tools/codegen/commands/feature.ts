@@ -1,10 +1,29 @@
 import { loadConfig } from "../config";
 import { dirExists } from "../core/filesystem";
 import { logger } from "../core/logger";
-import { assertValidName, toCamel, toKebab } from "../core/naming";
+import {
+  assertValidName,
+  contentFileName,
+  constantsFileName,
+  stateHookFileName,
+  toCamel,
+  toKebab,
+  typesFileName,
+} from "../core/naming";
 import { Planner, finalize, type FinalizeResult } from "../core/planner";
 import { promptInput } from "../core/prompts";
-import { featureRootIndex, subBarrel } from "../templates/feature";
+import {
+  componentsBarrel,
+  constantsFile,
+  contentComponentFile,
+  featureRootIndex,
+  hooksBarrel,
+  libBarrel,
+  stateHookFile,
+  typesBarrel,
+  typesFile,
+  viewFile as featureViewFile,
+} from "../templates/feature";
 import { addPageToPlan } from "./shared";
 
 export interface FeatureOptions {
@@ -14,8 +33,6 @@ export interface FeatureOptions {
   yes?: boolean;
   dryRun?: boolean;
 }
-
-const SUBFOLDERS = ["components", "hooks", "lib", "types"] as const;
 
 export async function runFeature(
   nameArg: string | undefined,
@@ -46,9 +63,18 @@ export async function runFeature(
 
   const planner = new Planner();
   const base = `${cfg.featuresDir}/${feature}`;
-  for (const sub of SUBFOLDERS) {
-    planner.create(`${base}/${sub}/index.ts`, subBarrel(sub));
-  }
+
+  // Generic sample architecture files.
+  planner.create(`${base}/types/${typesFileName(feature)}`, typesFile(feature));
+  planner.create(`${base}/lib/${constantsFileName(feature)}`, constantsFile(feature));
+  planner.create(`${base}/hooks/${stateHookFileName(feature)}`, stateHookFile(feature));
+  planner.create(`${base}/components/${contentFileName(feature)}`, contentComponentFile(feature));
+
+  // Focused barrel exports.
+  planner.create(`${base}/types/index.ts`, typesBarrel(feature));
+  planner.create(`${base}/lib/index.ts`, libBarrel(feature));
+  planner.create(`${base}/hooks/index.ts`, hooksBarrel(feature));
+  planner.create(`${base}/components/index.ts`, componentsBarrel(feature));
 
   await addPageToPlan({
     planner,
@@ -57,6 +83,7 @@ export async function runFeature(
     page,
     route,
     pathKey,
+    viewSource: featureViewFile(feature, page),
     currentFeatureIndex: featureRootIndex(),
     featureIndexExists: false,
   });

@@ -35,6 +35,8 @@ export interface AddPageInput {
   page: string;
   route: string;
   pathKey: string;
+  /** Optional custom view source. Falls back to a generic view template. */
+  viewSource?: string;
   /** Current content of the feature root index (in-memory or from disk). */
   currentFeatureIndex: string;
   /** Whether the feature index already exists on disk. */
@@ -53,7 +55,7 @@ export interface AddPageResult {
  * file already exists (never overwrites a route).
  */
 export async function addPageToPlan(input: AddPageInput): Promise<AddPageResult> {
-  const { planner, cfg, feature, page, route, pathKey } = input;
+  const { planner, cfg, feature, page, route, pathKey, viewSource } = input;
   const parsed = parseRoute(route);
 
   // View file
@@ -61,7 +63,7 @@ export async function addPageToPlan(input: AddPageInput): Promise<AddPageResult>
   if (fileExists(viewPath)) {
     throw new Error(`View already exists: ${viewPath}`);
   }
-  planner.create(viewPath, viewFile(page, parsed));
+  planner.create(viewPath, viewSource ?? viewFile(page, parsed));
 
   // App Router page
   const pagePath = await pageFilePath(route, cfg);
