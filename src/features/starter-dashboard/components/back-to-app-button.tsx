@@ -2,9 +2,8 @@ import Link from "next/link";
 import { paths } from "@/routes";
 
 /**
- * Persistent, subtle "Back to App" action shown on the dashboard. Always
- * available (even when the floating shortcut is disabled) so a developer who
- * deep-links to /dashboard-demo has an obvious way back to the real app.
+ * Persistent, subtle "Back to App" action shown on the dashboard so a developer
+ * who deep-links to /dashboard-demo has an obvious way back to the real app.
  */
 export function BackToAppButton() {
   return (

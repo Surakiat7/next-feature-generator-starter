@@ -121,17 +121,8 @@ export function getSteps(status: ProjectStatus): OnboardingStep[] {
       number: 8,
       title: "Start building the real application",
       description:
-        "The starter dashboard is developer tooling only. Implement your app in `src/app/page.tsx` and feature code under `src/features/`.",
+        `The starter dashboard is developer tooling only. Implement your app in \`src/app/page.tsx\` and feature code under \`src/features/\`. The dashboard stays accessible directly at \`${paths.starterDashboard}\`.`,
       status: { text: "Ready", tone: "ready" },
-    },
-    {
-      id: "hide-shortcut",
-      number: 9,
-      title: "Hide the Starter Dashboard shortcut",
-      description:
-        `Setting \`SHOW_STARTER_DASHBOARD=false\` hides only the floating shortcut. The dashboard, generators, and starter tooling remain accessible directly at \`${paths.starterDashboard}\`.`,
-      commands: ["SHOW_STARTER_DASHBOARD=false"],
-      status: { text: "Optional", tone: "optional" },
     },
   ];
 }

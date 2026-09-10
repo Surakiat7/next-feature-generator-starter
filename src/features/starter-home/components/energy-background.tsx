@@ -1,6 +1,6 @@
 "use client";
 
-import { animate, stagger } from "animejs";
+import { animate } from "animejs";
 import { useEffect, useRef } from "react";
 
 function prefersReduced() {
@@ -18,10 +18,8 @@ export function EnergyBackground() {
     const root = rootRef.current;
     if (!root || prefersReduced()) return;
 
-    const core = root.querySelector<SVGElement>("[data-core]");
     const ring = root.querySelector<SVGElement>("[data-ring]");
     const rotator = root.querySelector<SVGGElement>("[data-rotator]");
-    const dots = root.querySelectorAll<SVGCircleElement>("[data-dot]");
     const wave = root.querySelector<SVGCircleElement>("[data-wave]");
 
     // Entrance
@@ -33,18 +31,6 @@ export function EnergyBackground() {
         ease: "outExpo",
       }),
     );
-
-    if (core) {
-      anims.current.push(
-        animate(core, {
-          scale: [0.95, 1.15],
-          duration: 2200,
-          loop: true,
-          alternate: true,
-          ease: "inOutSine",
-        }),
-      );
-    }
 
     if (ring) {
       anims.current.push(
@@ -69,20 +55,6 @@ export function EnergyBackground() {
       );
     }
 
-    if (dots.length) {
-      anims.current.push(
-        animate(dots, {
-          opacity: [0.25, 0.85],
-          scale: [0.9, 1.05],
-          duration: 1200,
-          loop: true,
-          alternate: true,
-          delay: stagger(80),
-          ease: "inOutSine",
-        }),
-      );
-    }
-
     if (wave) {
       anims.current.push(
         animate(wave, {
@@ -103,102 +75,93 @@ export function EnergyBackground() {
   }, []);
 
   return (
-    <svg
-      ref={rootRef}
-      viewBox="0 0 640 640"
-      className="pointer-events-none absolute -top-8 left-1/2 h-[90vmin] w-[90vmin] -translate-x-1/2 opacity-30 dark:opacity-40"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id="core-glow" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0%" stopColor="currentColor" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-
-      <g className="text-emerald-600 dark:text-emerald-400" style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-        <circle cx="320" cy="320" r="240" className="text-zinc-200/50 dark:text-zinc-800/50" stroke="currentColor" strokeWidth="0.5" opacity="0.3" />
-        <circle cx="320" cy="320" r="160" className="text-zinc-200/50 dark:text-zinc-800/50" stroke="currentColor" strokeWidth="0.5" opacity="0.4" />
-        <circle cx="320" cy="320" r="80" className="text-zinc-200/50 dark:text-zinc-800/50" stroke="currentColor" strokeWidth="0.5" opacity="0.5" />
-
-        <circle
-          data-wave
-          cx="320"
-          cy="320"
-          r="120"
-          stroke="currentColor"
-          strokeWidth="1"
-          opacity="0.25"
+    <div className="pointer-events-none col-start-1 row-start-1 h-[100vmin] w-[100vmin]">
+      <svg
+        ref={rootRef}
+        viewBox="0 0 640 640"
+        className="h-full w-full opacity-30 dark:opacity-40"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+        <g
+          className="text-emerald-600 dark:text-emerald-400"
           style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        />
-
-        <g data-rotator style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+        >
           <circle
             cx="320"
             cy="320"
-            r="220"
+            r="240"
+            className="text-emerald-600/20 dark:text-emerald-400/20"
             stroke="currentColor"
-            strokeWidth="1"
-            strokeDasharray="20 180"
-            strokeLinecap="round"
-            opacity="0.35"
+            strokeWidth="0.5"
+            opacity="0.3"
           />
           <circle
             cx="320"
             cy="320"
-            r="200"
+            r="160"
+            className="text-emerald-600/25 dark:text-emerald-400/25"
             stroke="currentColor"
-            strokeWidth="1"
-            strokeDasharray="120 280"
-            strokeLinecap="round"
-            opacity="0.2"
+            strokeWidth="0.5"
+            opacity="0.4"
           />
-        </g>
-
-        <g className="text-emerald-500 dark:text-emerald-400">
-          {Array.from({ length: 24 }).map((_, i) => {
-            const angle = (i * 15 * Math.PI) / 180;
-            const x = 320 + 220 * Math.cos(angle);
-            const y = 320 + 220 * Math.sin(angle);
-            return (
-              <circle
-                key={i}
-                data-dot
-                cx={x}
-                cy={y}
-                r="2.5"
-                fill="currentColor"
-                style={{ transformBox: "fill-box", transformOrigin: "center" }}
-              />
-            );
-          })}
-        </g>
-
-        <circle
-          data-ring
-          cx="320"
-          cy="320"
-          r="240"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          opacity="0.25"
-          style={{ transformBox: "fill-box", transformOrigin: "center" }}
-        />
-
-        <g style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-          <circle cx="320" cy="320" r="28" fill="url(#core-glow)" />
           <circle
-            data-core
             cx="320"
             cy="320"
-            r="8"
-            fill="currentColor"
+            r="80"
+            className="text-emerald-600/30 dark:text-emerald-400/30"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            opacity="0.5"
+          />
+
+          <circle
+            data-wave
+            cx="320"
+            cy="320"
+            r="120"
+            stroke="currentColor"
+            strokeWidth="1"
+            opacity="0.25"
+            style={{ transformBox: "fill-box", transformOrigin: "center" }}
+          />
+
+          <g data-rotator style={{ transformBox: "fill-box", transformOrigin: "center" }}>
+            <circle
+              cx="320"
+              cy="320"
+              r="220"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeDasharray="20 180"
+              strokeLinecap="round"
+              opacity="0.35"
+            />
+            <circle
+              cx="320"
+              cy="320"
+              r="200"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeDasharray="120 280"
+              strokeLinecap="round"
+              opacity="0.2"
+            />
+          </g>
+
+          <circle
+            data-ring
+            cx="320"
+            cy="320"
+            r="240"
+            stroke="currentColor"
+            strokeWidth="0.5"
+            opacity="0.25"
             style={{ transformBox: "fill-box", transformOrigin: "center" }}
           />
         </g>
-      </g>
-    </svg>
+      </svg>
+    </div>
   );
 }
