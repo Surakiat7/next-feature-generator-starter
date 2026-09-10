@@ -14,4 +14,7 @@
  */
 export const paths = {
   home: "/",
+
+  // Developer tooling (excluded from application route metrics).
+  starterDashboard: "/dashboard-demo",
 } as const;

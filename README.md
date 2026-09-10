@@ -110,6 +110,36 @@ pages under `src/app/[locale]/…`. See
 [`.agents/rules/i18n.md`](.agents/rules/i18n.md) and
 [`.agents/rules/theme.md`](.agents/rules/theme.md).
 
+## Starter Dashboard
+
+Optional **developer tooling** at [`/dashboard-demo`](http://localhost:3000/dashboard-demo)
+— a development-time control center for understanding the starter architecture.
+It shows **real detected project state** (features, application routes vs.
+developer-tooling routes, i18n/theme status) and a clearly-labelled **simulated**
+Live Generator Demo (animated terminal + file tree) that never touches your
+files.
+
+The root route `/` stays the developer's real application and contains none of
+this — the dashboard lives only at `/dashboard-demo`.
+
+A small floating shortcut into the dashboard is shown in the app when enabled:
+
+```bash
+# .env.local
+SHOW_STARTER_DASHBOARD=true    # show the floating "</> Starter" shortcut
+SHOW_STARTER_DASHBOARD=false   # hide it (safe default when unset)
+```
+
+`SHOW_STARTER_DASHBOARD` controls **only the floating shortcut**. It does **not**
+disable the generators and does **not** block `/dashboard-demo` (still reachable
+by direct navigation, with a persistent "← Back to App" action). Once your setup
+is complete, set it to `false` — the CLI generators remain fully available:
+
+```bash
+pnpm gen feature ...   pnpm gen page ...   pnpm gen i18n ...
+pnpm gen theme ...      pnpm gen doctor
+```
+
 ## Scripts
 
 ```bash
