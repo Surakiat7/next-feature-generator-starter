@@ -41,6 +41,27 @@ const TONE_CLASS = {
   muted: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
 } as const;
 
+function renderTokens(
+  tokens: { text: string; param?: boolean }[],
+  variant: "template" | "example",
+) {
+  return tokens.map((token, i) => {
+    if (!token.param) return <span key={i}>{token.text}</span>;
+    return (
+      <span
+        key={i}
+        className={
+          variant === "example"
+            ? "font-medium text-blue-600 dark:text-blue-400"
+            : "font-medium text-zinc-300 dark:text-zinc-200"
+        }
+      >
+        {token.text}
+      </span>
+    );
+  });
+}
+
 export function CommandExplorer({
   i18nEnabled,
   themeEnabled,
@@ -130,13 +151,27 @@ export function CommandExplorer({
 
       {/* Structure preview */}
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/40">
-        <div ref={codeRef} className="flex items-center justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-          <div className="flex w-fit items-center gap-2">
-            <code className="scrollbar-faint w-fit overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
-              <span className="select-none text-emerald-600 dark:text-emerald-400">$ </span>
-              {selected.command}
-            </code>
-            <CopyButton value={selected.command} />
+        <div ref={codeRef} className="flex items-start justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
+          <div className="flex min-w-0 flex-col gap-1">
+            {selected.template && (
+              <div className="flex items-center gap-2">
+                <span className="hidden shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium leading-none text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 sm:inline-flex sm:items-center">
+                  template
+                </span>
+                <code className="scrollbar-faint min-w-0 overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                  {renderTokens(selected.template, "template")}
+                </code>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <span className="hidden shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium leading-none text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 sm:inline-flex sm:items-center">
+                example
+              </span>
+              <code className="scrollbar-faint min-w-0 overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
+                {selected.example ? renderTokens(selected.example, "example") : selected.command}
+              </code>
+              <CopyButton value={selected.command} />
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button

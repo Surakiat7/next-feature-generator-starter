@@ -21,6 +21,12 @@ export interface CommandPreview {
   setup?: SetupKind;
   /** Marks the command whose badge shows the generated feature count. */
   countsFeatures?: boolean;
+  /**
+   * Syntax tokens for display: `param` tokens are highlighted as the parts a user
+   * should replace. Concatenating all `text` values must equal `command`.
+   */
+  template?: { text: string; param?: boolean }[];
+  example?: { text: string; param?: boolean }[];
 }
 
 /** Baseline structure shown as "existing" context in every preview. */
@@ -43,6 +49,14 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
       "src/app/login/page.tsx",
     ],
     modifies: ["src/routes/paths.ts"],
+    template: [
+      { text: "pnpm gen feature " },
+      { text: "<feature>", param: true },
+    ],
+    example: [
+      { text: "pnpm gen feature " },
+      { text: "login", param: true },
+    ],
   },
   {
     id: "page",
@@ -54,6 +68,18 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
       "src/app/forgot-password/page.tsx",
     ],
     modifies: ["src/features/auth/index.ts", "src/routes/paths.ts"],
+    template: [
+      { text: "pnpm gen page " },
+      { text: "<page>", param: true },
+      { text: " --feature " },
+      { text: "<feature>", param: true },
+    ],
+    example: [
+      { text: "pnpm gen page " },
+      { text: "forgot-password", param: true },
+      { text: " --feature " },
+      { text: "auth", param: true },
+    ],
   },
   {
     id: "component",
@@ -62,6 +88,18 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
     description: "Create a feature-owned component (use --shared for shared UI).",
     creates: ["src/features/auth/components/login-form.tsx"],
     modifies: ["src/features/auth/components/index.ts"],
+    template: [
+      { text: "pnpm gen component " },
+      { text: "<component>", param: true },
+      { text: " --feature " },
+      { text: "<feature>", param: true },
+    ],
+    example: [
+      { text: "pnpm gen component " },
+      { text: "login-form", param: true },
+      { text: " --feature " },
+      { text: "auth", param: true },
+    ],
   },
   {
     id: "i18n",
@@ -81,6 +119,18 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
       "locales/en.json",
     ],
     modifies: ["next.config.ts", "src/components/index.ts"],
+    template: [
+      { text: "pnpm gen i18n init --locales " },
+      { text: "<locales>", param: true },
+      { text: " --default-locale " },
+      { text: "<locale>", param: true },
+    ],
+    example: [
+      { text: "pnpm gen i18n init --locales " },
+      { text: "th,en", param: true },
+      { text: " --default-locale " },
+      { text: "th", param: true },
+    ],
   },
   {
     id: "theme",
@@ -98,6 +148,7 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
       "src/providers/index.ts",
       "src/components/index.ts",
     ],
+    example: [{ text: "pnpm gen theme init" }],
   },
   {
     id: "routes-check",
@@ -107,6 +158,7 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
     creates: [],
     modifies: [],
     note: "Read-only. Scans the source tree and reports findings — no files change.",
+    example: [{ text: "pnpm gen routes check" }],
   },
   {
     id: "doctor",
@@ -116,5 +168,6 @@ export const COMMAND_PREVIEWS: CommandPreview[] = [
     creates: [],
     modifies: [],
     note: "Read-only. Prints an architecture report — no files change.",
+    example: [{ text: "pnpm gen doctor" }],
   },
 ];
