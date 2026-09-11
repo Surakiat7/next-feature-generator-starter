@@ -1,13 +1,15 @@
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
-import path from "node:path";
-
 /**
- * REAL project status, detected from the source tree at request/build time.
- * Server-only (uses node:fs). This reflects the actual repository — it is NOT
- * the simulated demo state.
+ * REAL project status, derived from the source tree at build time.
+ *
+ * Uses Turbopack's `import.meta.glob` (Vite-compatible) instead of `node:fs`,
+ * so the file list is baked into the bundle when the app is compiled. This is
+ * why it reflects the actual repository in BOTH dev (with HMR when files are
+ * added/removed) and production — unlike a runtime `readdirSync(process.cwd())`
+ * scan, which would see nothing because Next.js does not deploy the `src/` tree.
+ *
+ * This is NOT the simulated demo state.
  */
 
-const ROOT = process.cwd();
 const DASHBOARD_FEATURE = "starter-dashboard";
 
 export interface FeatureInfo {
@@ -30,38 +32,49 @@ export interface ProjectStatus {
   healthy: boolean;
 }
 
-function safeReadDir(rel: string): string[] {
-  const abs = path.join(ROOT, rel);
-  if (!existsSync(abs)) return [];
-  return readdirSync(abs).filter((name) => {
-    if (name.startsWith(".")) return false;
-    return statSync(path.join(abs, name)).isDirectory();
-  });
-}
+// Every feature view, keyed by path. Lazy (thunks) — we only read the keys to
+// enumerate features/pages, so the modules are never actually loaded.
+const featureViews = import.meta.glob([
+  "../../*/view/*-view.tsx",
+  "!../../starter-dashboard/**",
+]);
+
+// Raw source of the centralized route registry, captured at build time.
+const pathsSource = import.meta.glob("../../../routes/paths.ts", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+}) as Record<string, string>;
+
+// Presence probes for optional subsystems. Empty object ⇒ file absent.
+const i18nProbe = import.meta.glob("../../../i18n/request.ts");
+const themeProbe = import.meta.glob("../../../providers/theme-provider.tsx");
 
 function readFeatures(): FeatureInfo[] {
-  return safeReadDir("src/features")
-    .filter((name) => name !== DASHBOARD_FEATURE)
-    .map((name) => {
-      const viewDir = path.join(ROOT, "src/features", name, "view");
-      const pages = existsSync(viewDir)
-        ? readdirSync(viewDir)
-            .filter((f) => f.endsWith("-view.tsx"))
-            .map((f) => f.replace(/-view\.tsx$/, ""))
-        : [];
-      return { name, pages };
-    });
+  const byFeature = new Map<string, string[]>();
+  for (const key of Object.keys(featureViews)) {
+    // Keys look like "../../product/view/product-view.tsx".
+    const match = key.match(/([^/]+)\/view\/(.+)-view\.tsx$/);
+    if (!match) continue;
+    const [, name, page] = match;
+    if (name === DASHBOARD_FEATURE) continue;
+    const pages = byFeature.get(name) ?? [];
+    pages.push(page);
+    byFeature.set(name, pages);
+  }
+  return [...byFeature.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, pages]) => ({ name, pages: pages.sort() }));
 }
 
 const TOOLING_KEYS = new Set(["starterDashboard"]);
 
 function readRoutes(): { app: RouteInfo[]; tooling: RouteInfo[] } {
-  const file = path.join(ROOT, "src/routes/paths.ts");
   const app: RouteInfo[] = [];
   const tooling: RouteInfo[] = [];
-  if (!existsSync(file)) return { app, tooling };
+  const source = Object.values(pathsSource)[0];
+  if (!source) return { app, tooling };
 
-  const source = readFileSync(file, "utf8");
   // Tolerant scan: `key: "..."` (static) or `key: (...) => ...` (dynamic).
   const re = /(\w+):\s*(?:"([^"]*)"|\([^)]*\)\s*=>\s*`([^`]*)`)/g;
   let match: RegExpExecArray | null;
@@ -81,8 +94,8 @@ function readRoutes(): { app: RouteInfo[]; tooling: RouteInfo[] } {
 export function getProjectStatus(): ProjectStatus {
   const features = readFeatures();
   const { app, tooling } = readRoutes();
-  const i18nEnabled = existsSync(path.join(ROOT, "src/i18n/request.ts"));
-  const themeEnabled = existsSync(path.join(ROOT, "src/providers/theme-provider.tsx"));
+  const i18nEnabled = Object.keys(i18nProbe).length > 0;
+  const themeEnabled = Object.keys(themeProbe).length > 0;
 
   return {
     features,
