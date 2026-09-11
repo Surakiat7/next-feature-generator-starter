@@ -50,7 +50,7 @@ export function GettingStartedStep({ step }: { step: OnboardingStep }) {
                 href={u.href}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-md border border-zinc-200 bg-white px-2 py-1 font-mono text-[11px] text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="break-all rounded-md border border-zinc-200 bg-white px-2 py-1 font-mono text-[11px] text-zinc-600 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 {u.href}
               </a>

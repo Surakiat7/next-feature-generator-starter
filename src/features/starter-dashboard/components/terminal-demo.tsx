@@ -31,9 +31,9 @@ export function TerminalDemo({ lines, running }: { lines: TerminalLine[]; runnin
         <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
         <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
         <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
-        <span className="ml-2 font-mono text-[11px] text-zinc-500">terminal — simulated</span>
+        <span className="ml-2 font-mono text-[10px] text-zinc-500">terminal — simulated</span>
       </div>
-      <div className="min-h-[210px] space-y-1 p-3 font-mono text-xs leading-6">
+      <div className="min-h-[180px] space-y-1 overflow-x-auto break-all p-3 font-mono text-[11px] leading-5 sm:min-h-[210px] sm:text-xs sm:leading-6">
         {lines.length === 0 ? (
           <div className="text-zinc-600">
             <span className="select-none text-emerald-400">$ </span>

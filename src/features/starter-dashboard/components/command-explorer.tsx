@@ -151,14 +151,14 @@ export function CommandExplorer({
 
       {/* Structure preview */}
       <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950/40">
-        <div ref={codeRef} className="flex items-start justify-between gap-2 border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-          <div className="flex min-w-0 flex-col gap-1">
+        <div ref={codeRef} className="flex flex-col gap-3 border-b border-zinc-200 px-4 py-3 sm:flex-row sm:items-start sm:justify-between dark:border-zinc-800">
+          <div className="flex min-w-0 flex-col gap-1.5">
             {selected.template && (
               <div className="flex items-center gap-2">
                 <span className="hidden shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-medium leading-none text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400 sm:inline-flex sm:items-center">
                   template
                 </span>
-                <code className="scrollbar-faint min-w-0 overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-500 dark:text-zinc-400">
+                <code className="scrollbar-faint block min-w-0 max-w-full overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-500 dark:text-zinc-400">
                   {renderTokens(selected.template, "template")}
                 </code>
               </div>
@@ -167,13 +167,13 @@ export function CommandExplorer({
               <span className="hidden shrink-0 rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium leading-none text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 sm:inline-flex sm:items-center">
                 example
               </span>
-              <code className="scrollbar-faint min-w-0 overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
+              <code className="scrollbar-faint block min-w-0 max-w-full overflow-x-auto whitespace-nowrap font-mono text-xs text-zinc-800 dark:text-zinc-200">
                 {selected.example ? renderTokens(selected.example, "example") : selected.command}
               </code>
               <CopyButton value={selected.command} />
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={stop}
